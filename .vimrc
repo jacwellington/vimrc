@@ -4,7 +4,6 @@ set runtimepath=~/.vimruntime,$VIMRUNTIME
 set showcmd		" Show (partial) command in status line.
 set showmatch		" Show matching brackets.
 set incsearch		" Incremental search
-filetype on
 set t_Co=256
 syntax on
 highlight OverLength ctermbg=red ctermfg=white guibg=#592929
@@ -29,7 +28,6 @@ set hidden
 set backspace=2
 if has("mouse")
 	set mouse=a
-	set ttymouse=sgr
 endif
 set guifont=Source\ Code\ Pro:h18
 
@@ -45,9 +43,6 @@ au BufNewFile,BufRead *.erb set filetype=eruby.html
 au BufNewFile,BufRead *.god set filetype=ruby
 au BufNewFile,BufRead *.js.erb set filetype=eruby.javascript
 au BufNewFile,BufRead *.md set filetype=markdown
-
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
 
 " Change leader mapping to ','
 let mapleader = ','
@@ -75,6 +70,11 @@ nmap <leader>d :bdelete<CR>
 map <leader>n :NERDTreeToggle<cr>
 
 let NERDTreeShowHidden=1
+
+filetype off
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
 " let Vundle manage Vundle
 " required! 
 Bundle 'gmarik/vundle'
@@ -84,27 +84,15 @@ Bundle 'aspnet.vim'
 Bundle 'django.vim'
 "
 " original repos on github
-Bundle 'othree/html5.vim'
-Bundle 'pangloss/vim-javascript'
-Bundle 'tpope/vim-markdown'
-Bundle 'aaronj1335/underscore-templates.vim'
 Bundle 'tpope/vim-fugitive'
-Bundle 'Lokaltog/vim-easymotion'
-Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
 Bundle 'tpope/vim-rails.git'
-Bundle 'farneman/Expression-Engine-Vim-syntax'
-Bundle 'StanAngeloff/php.vim'
 Bundle 'vim-ruby/vim-ruby'
 Bundle 'tmhedberg/matchit'
-Bundle 'iangreenleaf/yaml.vim'
 Bundle 'scrooloose/nerdtree'
-Bundle 'jistr/vim-nerdtree-tabs'
 Bundle 'tyok/ack.vim'
 Bundle 'tyok/nerdtree-ack'
 Bundle 'xolox/vim-misc'
 Bundle 'xolox/vim-notes'
-Bundle 'wesQ3/vim-windowswap'
-Bundle 'sjl/vitality.vim'
 Bundle 'bling/vim-airline'
 Bundle 'scrooloose/syntastic'
 Bundle 'airblade/vim-gitgutter'
@@ -115,21 +103,9 @@ Bundle 'LustyExplorer'
 Bundle 'yaml.vim'
 Bundle 'L9'
 Bundle 'FuzzyFinder'
-Bundle 'Tabmerge'
 
+call vundle#end()
 filetype plugin indent on     " required!
-"
-" Brief help
-" :BundleList          - list configured bundles
-" :BundleInstall(!)    - install(update) bundles
-" :BundleSearch(!) foo - search(or refresh cache first) for foo
-" :BundleClean(!)      - confirm(or auto-approve) removal of unused bundles
-"
-" see :h vundle for more details or wiki for FAQ
-" NOTE: comments after Bundle command are not allowed..
-
-
-" Experimental
 
 " Tab completion
 function! InsertTabWrapper()
