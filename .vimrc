@@ -80,8 +80,6 @@ call vundle#begin()
 Bundle 'gmarik/vundle'
 
 " My Bundles here:
-Bundle 'aspnet.vim'
-Bundle 'django.vim'
 "
 " original repos on github
 Bundle 'tpope/vim-fugitive'
@@ -98,11 +96,13 @@ Bundle 'scrooloose/syntastic'
 Bundle 'airblade/vim-gitgutter'
 Bundle 'tpope/vim-surround'
 " vim-scripts repos
+Bundle 'Vundle.vim'
 Bundle 'LustyJuggler'
 Bundle 'LustyExplorer'
 Bundle 'yaml.vim'
 Bundle 'L9'
 Bundle 'FuzzyFinder'
+Bundle 'wincent/Command-T'
 
 call vundle#end()
 filetype plugin indent on     " required!
@@ -193,4 +193,59 @@ function! DeleteInactiveBufs()
     echomsg nWipeouts . ' buffer(s) wiped out'
 endfunction
 command! Bdi :call DeleteInactiveBufs()
-map <leader>bo :call DeleteInactiveBufs()<cr>
+map <leader>o :call DeleteInactiveBufs()<cr>
+
+" Vim folding
+nnoremap zo zO
+nnoremap zf zMzr
+
+" Show statusline always
+set laststatus=1
+nnoremap <leader>a :set laststatus=1<CR>
+nnoremap <leader>s :set laststatus=2<CR>
+
+" Handlebars
+au  BufNewFile,BufRead *.mustache,*.hogan,*.hulk,*.hjs set filetype=html.mustache syntax=mustache | runtime! ftplugin/mustache.vim ftplugin/mustache*.vim ftplugin/mustache/*.vim
+au  BufNewFile,BufRead *.handlebars,*.hbs set filetype=html.handlebars syntax=mustache | runtime! ftplugin/mustache.vim ftplugin/mustache*.vim ftplugin/mustache/*.vim
+
+" Map Controls to change windows
+noremap <C-k> <C-w><Up>
+noremap <C-j> <C-w><Down>
+noremap <C-l> <C-w><Right>
+noremap <C-h> <C-w><Left>
+
+"Allows for highlighting and then control-r replacing
+vnoremap <C-r> "hy:%s/<C-r>h//gc<left><left><left>
+
+"Set filetypes
+au BufNewFile,BufRead *.erb set filetype=eruby.html
+au BufNewFile,BufRead *.god set filetype=ruby
+au BufNewFile,BufRead *.js.erb set filetype=eruby.javascript
+au BufNewFile,BufRead *.json.erb set filetype=eruby.javascript
+au BufNewFile,BufRead *.md set filetype=markdown
+
+"Command-T
+let g:CommandTSCMDirectories = "pwd"
+if &term =~ "xterm" || &term =~ "tmux"
+	let g:CommandTCancelMap = ['<ESC>', '<C-c>']
+endif
+
+" NERDTree
+map <leader>n :NERDTreeToggle<cr>
+let NERDTreeShowHidden=1
+
+" Macvim fullscreen workaround
+nnoremap <silent> <F5> :set lines=999 columns=999<CR>
+
+"Supress conque term warnings
+let g:ConqueTerm_StartMessages = 0
+
+"Change cursor to line on insert
+let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
+let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
+
+"Jump to last line
+if has("autocmd")
+  au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
+    \| exe "normal! g'\"" | endif
+endif
