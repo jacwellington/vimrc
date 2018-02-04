@@ -37,12 +37,17 @@ Bundle 'gmarik/vundle'
 " My Bundles here:
 "
 " original repos on github
+Bundle 'zah/nim.vim'
 Bundle 'tpope/vim-fugitive'
+Bundle 'tpope/vim-rhubarb'
 Bundle 'tpope/vim-rails.git'
+Bundle 'tpope/vim-markdown'
+Bundle 'jtratner/vim-flavored-markdown'
 Bundle 'othree/html5.vim'
 Bundle 'vim-scripts/svg.vim'
 Bundle 'vim-ruby/vim-ruby'
 Bundle 'derekwyatt/vim-scala'
+Bundle 'reedes/vim-pencil'
 Bundle 'tmhedberg/matchit'
 Bundle 'scrooloose/nerdtree'
 Bundle 'tyok/nerdtree-ack'
@@ -56,12 +61,20 @@ Bundle 'airblade/vim-gitgutter'
 Bundle 'tpope/vim-surround'
 Bundle 'dag/vim-fish'
 Bundle 'godlygeek/tabular'
+Bundle 'vimwiki/vimwiki.git'
+Bundle 'pangloss/vim-javascript'
+Bundle 'ekalinin/Dockerfile.vim'
+Bundle 'chase/vim-ansible-yaml'
+Bundle 'vim-scripts/groovy.vim'
+Bundle 'vim-scripts/groovyindent-unix'
+Bundle 'majutsushi/tagbar'
+Bundle 'posva/vim-vue'
 "Bundle 'chrisbra/csv.vim'
 " vim-scripts repos
+Bundle 'awk.vim'
 Bundle 'Vundle.vim'
 Bundle 'LustyJuggler'
 Bundle 'LustyExplorer'
-Bundle 'yaml.vim'
 Bundle 'L9'
 Bundle 'FuzzyFinder'
 Bundle 'wincent/Command-T'
@@ -71,7 +84,7 @@ filetype plugin indent on     " required!
 
 syntax on
 "highlight OverLength ctermbg=red ctermfg=white guibg=#592929
-colorscheme elflord
+colorscheme default
 set number
 "match OverLength /\%81v.\+/
 
@@ -135,11 +148,13 @@ set timeoutlen=1000 ttimeoutlen=0
 "let g:airline#extensions#bufferline#enabled = 1
 "let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#whitespace#enabled = 0
+set re=1 "Make airline faster
 
 "Integrate with syntastic
-let g:airline#extensions#syntastic#enabled = 1
+"let g:airline#extensions#syntastic#enabled = 1
 " Syntastic only show errors (not warnings)
 let g:syntastic_quiet_messages = { "level": "warnings"}
+let g:syntastic_disable_cpp_checker = 1
 
 "Git Gutter
 let g:gitgutter_enabled = 0
@@ -169,10 +184,9 @@ nnoremap zo zO
 nnoremap zf zMzr
 
 " Show statusline always
-set laststatus=1
+set laststatus=2
 nnoremap <leader>a :set laststatus=1<CR>
 nnoremap <leader>s :set laststatus=2<CR>
-
 
 " Map Controls to change windows
 noremap <C-k> <C-w><Up>
@@ -218,11 +232,18 @@ if has("autocmd")
     \| exe "normal! g'\"" | endif
 endif
 
+" Set up vim-rhubarb to work with enterprise github urls (for fugitive :Gbrowse)
+let g:github_enterprise_urls = ['https://github.umn.edu']
+
+
 " Set command t ignore
 set wildignore+=**/.git/*,**/doc/yard/*
 
 " Command T show by most recently used
-" nnoremap <silent> <leader>t :CommandTMRU<CR>
+nnoremap <silent> <leader>b :CommandTMRU<CR>
+
+" Make tagbar autoclose
+nnoremap <silent> <F9> :TagbarOpenAutoClose<CR>
 
 
 " Screen/tmux can also handle xterm mousiness, but Vim doesn't
@@ -235,16 +256,39 @@ if v:version >= 704 && &term =~ "^screen"
 	" best mouse-handling mode.
 	set ttymouse=sgr
 endif
-
 augroup ftgroup
 	autocmd!
 	au BufNewFile,BufRead *.erb set filetype=eruby.html
 	au BufNewFile,BufRead *.god set filetype=ruby
 	au BufNewFile,BufRead *.js.erb set filetype=eruby.javascript
-	au BufNewFile,BufRead *.md set filetype=markdown
+    au BufNewFile,BufRead *.md,*.markdown setlocal filetype=ghmarkdown
 	au BufNewFile,BufRead *.json.erb set filetype=eruby.javascript
+	au BufNewFile,BufRead Jenkinsfile set filetype=groovy
 	" Handlebars
 	au  BufNewFile,BufRead *.mustache,*.hogan,*.hulk,*.hjs set filetype=html.mustache syntax=mustache | runtime! ftplugin/mustache.vim ftplugin/mustache*.vim ftplugin/mustache/*.vim
 	au  BufNewFile,BufRead *.handlebars,*.hbs set filetype=html.handlebars syntax=mustache | runtime! ftplugin/mustache.vim ftplugin/mustache*.vim ftplugin/mustache/*.vim
-	autocmd Filetype ruby setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
+	au BufRead /tmp/psql.edit.* set syntax=sql
+	autocmd Filetype ruby,javascript,java,yaml setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
+	autocmd Filetype scss,css,html,eruby.html,vue setlocal iskeyword+=- 
+	autocmd Filetype scss,css,html,eruby.html,vue setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
+	autocmd FileType awk nnoremap <leader>a :!awk -f progfile.awk emp.data<CR>
+	autocmd FileType c,cpp set autoindent | set cindent  
 augroup END
+
+if has("cscope")
+	" use both cscope and ctag for 'ctrl-]', ':ta', and 'vim -t'
+	if filereadable("cscope.out")
+		cs add cscope.out  
+	endif
+
+
+	" cscope find usages of word under cursor
+    nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>	
+    nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>	
+    nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>	
+    nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>	
+    nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>	
+    nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>	
+    nmap <C-\>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+    nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>	
+endif
