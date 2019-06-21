@@ -45,6 +45,7 @@ Bundle 'tpope/vim-markdown'
 Bundle 'jtratner/vim-flavored-markdown'
 Bundle 'othree/html5.vim'
 Bundle 'vim-scripts/svg.vim'
+Bundle 'vim-scripts/lid.vim'
 Bundle 'vim-ruby/vim-ruby'
 Bundle 'derekwyatt/vim-scala'
 Bundle 'reedes/vim-pencil'
@@ -215,6 +216,7 @@ endif
 nnoremap <leader>n :NERDTreeToggle<cr>
 " NERDTree show hidden files
 let NERDTreeShowHidden=1
+let NERDTreeIgnore = ['\.pyc$', '.DS_Store', '__pycache__']
 
 " Macvim fullscreen workaround
 nnoremap <silent> <F5> :set lines=999 columns=999<CR>
